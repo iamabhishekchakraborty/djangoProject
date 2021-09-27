@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Cast list
+{% endblock %}
+
+{% block content %}
+<h2>Succession Series Cast list</h2>
+<div>Series Cast</div>
+    {% for cast in succession_casts %}
+        <div>
+            {{cast.name}} - {{cast.description}}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
