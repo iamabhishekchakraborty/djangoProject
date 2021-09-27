@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ succession_season_episodes.name }}
+{% endblock %}
+
+{% block content %}
+<div>About {{ succession_season_episodes.name|upper }} - {{ succession_season_episodes.description }}</div>
+<div>Aired on {{ succession_season_episodes.episodeAirDate }}</div>
+{% endblock %}

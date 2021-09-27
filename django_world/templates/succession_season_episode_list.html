@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Episode list
+{% endblock title %}
+
+{% block content %}
+    <div>Here are the list of available episodes for Season:{{ succession_season_episodes.0.partOfSeason }}</div>
+    <ul>
+    {% for episode in succession_season_episodes %}
+        <li>
+            <a href="{% url 'django_world:succession_season_episodes_detail' episode.id %}">
+                {{episode.name}}
+            </a>
+        </li>
+    {% empty %}
+        <div>Sorry, no information is available for Season:{{ succession_season_episodes.0.partOfSeason }} episodes yet.</div>
+    {% endfor %}
+    </ul>
+    <br>
+    <div>
+        <a href="{% url 'django_world:succession_season_episodes_register' %}">Add more episodes...</a>
+    </div>
+{% endblock content %}

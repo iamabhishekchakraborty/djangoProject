@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Season list
+{% endblock %}
+
+{% block content %}
+<h2>Succession Seasons</h2>
+{% if succession_seasons %}
+    <div>Total Seasons: {{ succession_seasons|length }}</div>
+        {% for season in succession_seasons %}
+            <div>
+                {{ season.name|upper }}
+                <a href="{{season.imdbUrl}}"> (IMDB Link) </a>
+                <p>Description - {{season.description}} </p>
+                Number of episodes in this season {{ season.succession_season_episodes_set.all.count }}. <a href="{% url 'django_world:succession_season_episodes' season.id %}">List of Episodes</a>
+            </div>
+        {% endfor %}
+{% else %}
+    <div>No Seasons are available.</div>
+{% endif %}
+{% endblock %}

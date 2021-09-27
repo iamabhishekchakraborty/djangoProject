@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+# import psycopg2.extensions
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,13 +32,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django_world.apps.DjangoWorldConfig',
+    'django.contrib.admin',              # the admin site
+    'django.contrib.auth',               # an authentication system
+    'django.contrib.contenttypes',       # framework for content types
+    'django.contrib.sessions',           # framework for sessions
+    'django.contrib.messages',           # framework for messages
+    'django.contrib.staticfiles',        # framework for managing static files
+    # anything Django uses must be registered as an app or middleware, djang-crispy-forms is an app
+    'crispy_forms',
 ]
+
+# TODO: Set template_pack
+# configure django-crispy-forms to use bootstrap4
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,6 +85,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': '<db_name>',
+        # 'USER': '<db_username>',
+        # 'PASSWORD': 'db_password',
+        # 'HOST': 'db_hostname_or_ip',
+        # 'PORT': 'db_port',
+        # 'OPTIONS': {
+        #     'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE,
+        #     'timeout': 20,
+        # },
     }
 }
 
@@ -118,6 +136,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
