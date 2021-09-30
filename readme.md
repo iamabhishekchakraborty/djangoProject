@@ -206,3 +206,18 @@ The default display of any object is the value returned by __str__
 - Allowed hosts - `settings.py` contains a list of server names called *ALLOWED_HOSTS* which determines where the application can run from - this needs to be updated before deploying to production host
 - Static files - these files are not part of Django templating system which include JavaScript or CSS files - in production need to configure a service to server any static files - during deployment all static files are collected into a location indicated by `STATIC_ROOT` in `settings.py` (run `python manage.py collectstatic` to collect static files)
 - database - should contain the list of available connection strings
+
+
+#### Deploying to HEROKU
+In order to execute the application Heroku needs to set up the appropriate environment and dependencies - which is provided by a number of files
+- runtime.txt - the programming language and version to use
+- requirements.txt - the python component dependencies
+- Procfile - a list of processes to be executed to start the application (for Django this will be the Gunicorn web app server  with a `.wsgi` script)
+- wsgi.py - WSGI configuration file to call Django application in the Heroku environment
+
+Heroku is closely integrated with the git source code version control system, using it to upload/synchronise any changes you make to the live system. It does this by adding a new heroku "remote" repository named heroku pointing to a repository for your source on the Heroku cloud.
+
+We can't use the default `SQLite` database on Heroku because it is file-based, and it would be deleted from the ephemeral file system every time the application restarts. The Heroku mechanism for handling this situation is to use a database add-on and configure the web application using information from an environment configuration variable, set by the add-on.
+
+During development, we used Django and the Django development web server to serve our static files (CSS, JavaScript, etc.). In a production environment we instead typically serve static files from a content delivery network (CDN) or the web server. To make it easy to host static files separately from the Django web application, Django provides the `collectstatic` tool to collect these files for deployment
+Heroku automatically calls collectstatic and prepares your static files for use by `WhiteNoise` after it uploads your application.
