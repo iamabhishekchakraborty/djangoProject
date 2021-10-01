@@ -221,3 +221,27 @@ We can't use the default `SQLite` database on Heroku because it is file-based, a
 
 During development, we used Django and the Django development web server to serve our static files (CSS, JavaScript, etc.). In a production environment we instead typically serve static files from a content delivery network (CDN) or the web server. To make it easy to host static files separately from the Django web application, Django provides the `collectstatic` tool to collect these files for deployment
 Heroku automatically calls collectstatic and prepares your static files for use by `WhiteNoise` after it uploads your application.
+
+#### Create the heroku app and upload the django project
+- `heroku create <appname>` if no appname is specified heroku will  assign a random name
+- (additional step - if there is need/feel to change the appname need to repoint the heroku git remote to a different one) 
+-- `heroku apps:rename <newappname>`
+-- if appname already changed via web-ui then need to update the heroku remote URL `git remote set-url heroku <newurl>`
+-- `heroku git:remote -a <appname> -r <remote>` 
+- `git push heroku main` (push the app to heroku repository - this will upload the app, package it in dyno, run `collectstatic` and start the site)
+- for the first time to setup the database tables to be used by the applications need to perform the migrate operation `heroku run python manage.py migrate`
+- create the administration superuser `heroku run python manage.py createsuperuser`
+- to open the site/app `heroku open`
+
+To get the list of addons and their price-tier and state(in our case heroku-postgresql database add-on) `heroku addons`
+
+To check the configuration variables for the site `heroku config`
+
+To set the configuration/environment variables to be used by the site `heroku config:set DJANGO_DEBUg=False`
+
+To set the list of allowed hosts to determine where the application can run from update `settings.py` like - 
+ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127.0.0.1']
+```
+# For example
+# ALLOWED_HOSTS = ['app--djangoproject.herokuapp.com', '127.0.0.1']
+```
