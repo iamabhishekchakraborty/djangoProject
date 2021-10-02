@@ -224,14 +224,21 @@ Heroku automatically calls collectstatic and prepares your static files for use 
 
 #### Create the heroku app and upload the django project
 - `heroku create <appname>` if no appname is specified heroku will  assign a random name
+  - for an already existing heroku app to set the remote to the local repository use `heroku git:remote -a <appname>`
 - (additional step - if there is need/feel to change the appname need to repoint the heroku git remote to a different one) 
--- `heroku apps:rename <newappname>`
--- if appname already changed via web-ui then need to update the heroku remote URL `git remote set-url heroku <newurl>`
--- `heroku git:remote -a <appname> -r <remote>` 
-- `git push heroku main` (push the app to heroku repository - this will upload the app, package it in dyno, run `collectstatic` and start the site)
+  - `heroku apps:rename <newappname>`
+  - if appname already changed via web-ui then need to update the heroku remote URL `git remote set-url heroku <newurl>`
+  - `heroku git:remote -a <appname> -r <remote>` 
+- `git push heroku main` (push the app to heroku repository - this will upload the app, package it in dyno, run `collectstatic` and start the site) - point to note heroku will only deploy/consider code pushed to main branch, pushing code to another branch of `heroku remote` has no effect 
+  - the above will push the command from your local repository main branch to your heroku remote 
+  - if you want to deploy code to heroku from non-main branch of local repository use `git push heroku non-mainbranchname:main` to ensure it's pushed to remote main branch 
 - for the first time to setup the database tables to be used by the applications need to perform the migrate operation `heroku run python manage.py migrate`
 - create the administration superuser `heroku run python manage.py createsuperuser`
 - to open the site/app `heroku open`
+
+To reset/purge an apps Heroku git repository use `heroku-repo` plugin
+`heroku plugins:install heroku repo`
+`heroku repo:reset --app <appname>`
 
 To get the list of addons and their price-tier and state(in our case heroku-postgresql database add-on) `heroku addons`
 
