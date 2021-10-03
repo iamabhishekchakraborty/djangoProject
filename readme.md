@@ -252,3 +252,4 @@ ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127
 # For example
 # ALLOWED_HOSTS = ['app--djangoproject.herokuapp.com', '127.0.0.1']
 ```
+
