@@ -244,7 +244,7 @@ To get the list of addons and their price-tier and state(in our case heroku-post
 
 To check the configuration variables for the site `heroku config`
 
-To set the configuration/environment variables to be used by the site `heroku config:set DJANGO_DEBUg=False`
+To set the configuration/environment variables to be used by the site `heroku config:set DJANGO_DEBUG=False`
 
 To set the list of allowed hosts to determine where the application can run from update `settings.py` like - 
 ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127.0.0.1']
@@ -253,3 +253,43 @@ ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127
 # ALLOWED_HOSTS = ['app--djangoproject.herokuapp.com', '127.0.0.1']
 ```
 
+#### Heroku container runtime
+Along with the traditional Git plus slug compiler deployments (`git push heroku master`), Heroku also supports Docker-based deployments, with the Heroku Container Runtime.
+Docker based deployments have many benefits
+- no slug limits of 500mb
+- full control over the OS
+- easily switch to different vendor (AWS, GCP)
+
+There are currently two ways to deploy apps with Docker to Heroku:
+- *Container Registry*: deploy pre-built Docker images to Heroku
+- *Build Manifest*: given a Dockerfile, Heroku builds and deploys the Docker image
+
+Add a `Dockerfile` to the project root directory
+Add a `.dockerignore` file
+
+Test locally (build the image and run the container) 
+```
+docker build -t web:latest .
+docker run -d --name <containername> -e "PORT=8765" -e "DEBUG=True" -p 8007:8765 web:latest
+```
+Stop then remove the running container once done
+```
+docker stop <containername>
+docker rm <containername>
+```
+
+To deploy to Heroku using *Build Manifest* approach -
+Prepare a `heroku.yml` file at the project root directory
+
+Set the stack of your Heroku app to container `heroku stack:set container -a <appname>`
+
+Install the `heroku-manifest` plugin 
+```
+heroku update beta
+heroku plugins:install @heroku-cli/plugin-manifest
+```
+Add the Heroku remote and push the code up to Heroku to build the image and run the container
+```
+heroku git:remote -a <appname>
+git push heroku <branchname>:master
+```

@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# pull official base image
 FROM python:3.8.6-alpine
 
 # set environment variables
@@ -33,5 +34,5 @@ COPY . .
 RUN adduser -D abhishek
 USER abhishek
 
-# run gunicorn
+# run gunicorn ($PORT variable. Essentially, any web server that runs on the Container Runtime must listen for HTTP traffic at the $PORT environment variable, which is set by Heroku at runtime.)
 # CMD gunicorn djangoproject.wsgi:application --bind 0.0.0.0:$PORT
