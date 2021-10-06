@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV DJANGO_DEBUG=False
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # install psycopg2
 RUN apk update \

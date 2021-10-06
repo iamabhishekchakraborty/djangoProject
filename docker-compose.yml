@@ -1,14 +1,6 @@
 version: "3.8"
    
 services:
-  db:
-    image: postgres:13.4-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
   web:
     build: ./app
     command: python manage.py runserver 0.0.0.0:8000
@@ -20,6 +12,14 @@ services:
       - db
     env_file:
       - ./.env.dev
+  db:
+    image: postgres:13.4-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=django_user
 
 volumes:
   postgres_data:
