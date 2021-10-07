@@ -1,6 +1,6 @@
-# This is a workflow to help on - Build & Push to Heroku Docker Registry
+# This is a workflow to help to deploy to Heroku with git
 
-name: Build & Push to Heroku Docker Registry
+name: Build & Push to Heroku
 
 # Controls when the workflow will run
 on:
@@ -23,21 +23,21 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Git Checkout
         uses: actions/checkout@v2
-      # Login in Heroku 
-      - name: Login to Heroku Container registry
-        env: 
-            HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: heroku container:login 
-      # Build and push Docker image
-      - name: Build and push
-        env:
-            HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web 
-      # Release
-      - name: Release
-        env:
-            HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} web
+      - name: Deploy django to heroku
+          uses: iamabhishekchakraborty/djangoProject #Uses an action in the root directory
+          id: deploy 
+          with: 
+            heroku_app_name : ${{ secrets.HEROKU_APP_NAME_GIT }}
+            heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+            heroku_email_address: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+            use_git: true
+            force_push: true
+          
+        #Use the output  from the hello step
+        - name: Get the output status
+          run: echo "${{ steps.deploy.outputs.status }}"
+        - name: Getting the files in directory
+          run: pwd
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Deployment Successfull!
