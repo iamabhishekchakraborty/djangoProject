@@ -244,7 +244,7 @@ To get the list of addons and their price-tier and state(in our case heroku-post
 
 To check the configuration variables for the site `heroku config`
 
-To set the configuration/environment variables to be used by the site `heroku config:set DJANGO_DEBUg=False`
+To set the configuration/environment variables to be used by the site `heroku config:set DJANGO_DEBUG=False`
 
 To set the list of allowed hosts to determine where the application can run from update `settings.py` like - 
 ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127.0.0.1']
