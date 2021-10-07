@@ -31,9 +31,7 @@ jobs:
             heroku_app_name : ${{ secrets.HEROKU_APP_NAME_GIT }}
             heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
             heroku_email_address: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
-            use_git: true
-            force_push: true
-          
+        
         #Use the output  from the hello step
       - name: Get the output status
         run: echo "${{ steps.deploy.outputs.status }}"
