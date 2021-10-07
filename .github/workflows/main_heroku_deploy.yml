@@ -16,6 +16,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
+    name: build-and-push-to-heroku
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -24,7 +25,7 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2
       - name: Deploy django to heroku
-        uses: iamabhishekchakraborty/main_heroku_deploy@v2 #Uses an action
+        uses: iamabhishekchakraborty/djangoProject/.github/workflows/main_heroku_deploy@django_prod_env #Uses the action
         id: deploy 
         with: 
             heroku_app_name : ${{ secrets.HEROKU_APP_NAME_GIT }}
