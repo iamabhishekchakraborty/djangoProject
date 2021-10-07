@@ -24,7 +24,7 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2
       - name: Deploy django to heroku
-        uses: iamabhishekchakraborty/djangoProject@v1 #Uses an action in the root directory
+        uses: iamabhishekchakraborty/main_heroku_deploy@v2 #Uses an action
         id: deploy 
         with: 
             heroku_app_name : ${{ secrets.HEROKU_APP_NAME_GIT }}
