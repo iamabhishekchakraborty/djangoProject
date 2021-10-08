@@ -1,25 +1,28 @@
-version: "3.8"
+version: "3.9"
    
+# defines a service that can be used for development based on the Dockerfile
 services:
-  web:
-    build: ./app
+  app:
+    build:
+      context: .
     command: python manage.py runserver 0.0.0.0:8000
+    # maps the directory as a volume so that the container can access realtime updates made to the project
     volumes:
-      - ./app:/usr/src/app
+      - ./app:/app
     ports:
       - "8000:8000"
-    depends_on:
-      - db
-    env_file:
-      - ./.env.dev
-  db:
-    image: postgres:13.4-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=django_user
-      - POSTGRES_PASSWORD=django_user
-
-volumes:
-  postgres_data:
+#    depends_on:
+#      - db
+#    env_file:
+#      - ./.env.dev
+#  db:
+#    image: postgres:13.4-alpine
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    environment:
+#      - POSTGRES_DB=postgres
+#      - POSTGRES_USER=django_user
+#      - POSTGRES_PASSWORD=django_user
+#
+#volumes:
+#  postgres_data:
