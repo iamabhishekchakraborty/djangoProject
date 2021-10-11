@@ -1,28 +1,45 @@
+# tool used for defining and running multi-container applications in the required order
 version: "3.9"
    
 # defines a service that can be used for development based on the Dockerfile
 services:
-  app:
-    build:
-      context: .
-    command: python manage.py runserver 0.0.0.0:8000
+  web:
+    # build an image from the Docker files present in the project root directory
+    build: .
+    # command to run when Docker runs the container image
+#    command: sh -c "python manage.py makemigrations &&
+#                    python manage.py migrate &&
+#                    gunicorn djangoproject.wsgi:application --bind 0.0.0.0:${PORT}"
+    command: python manage.py runserver 0.0.0.0:${PORT}
+    # assign a container name, if no name provided Docker will assign a random name
+    container_name: djangoproject
     # maps the directory as a volume so that the container can access realtime updates made to the project
     volumes:
-      - ./app:/app
+      - .:/app
+    # file where env variables are stored
+    env_file:
+      - ./.env
+    # expose the port to other services defined in docker-compose, so they can access this service via this port
+    expose:
+      - ${PORT}
+    # will be shared among different services started by the docker-compose (exposed to the host machine)
     ports:
-      - "8000:8000"
-#    depends_on:
-#      - db
-#    env_file:
-#      - ./.env.dev
-#  db:
-#    image: postgres:13.4-alpine
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#    environment:
-#      - POSTGRES_DB=postgres
-#      - POSTGRES_USER=django_user
-#      - POSTGRES_PASSWORD=django_user
-#
-#volumes:
-#  postgres_data:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db
+#    restart: "on-failure"
+
+  db:
+    image: postgres:13.4-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGPORT=${POSTGRES_PORT}
+#    restart: "on-failure"
+
+volumes:
+  postgres_data:
