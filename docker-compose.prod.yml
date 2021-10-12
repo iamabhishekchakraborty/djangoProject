@@ -2,11 +2,12 @@ version: "3.9"
 
 services:
   web:
+    image: djangoproject/mywebservice:latest
     build:
      context: .
      dockerfile: Dockerfile.prod
     command: gunicorn djangoproject.wsgi:application --bind 0.0.0.0:${PORT}
-    container_name: djangoproject
+    container_name: djangoproject_web
     volumes:
       - static_volume:/home/app/web/staticfiles
     env_file:
@@ -19,6 +20,8 @@ services:
       - db
   # nginx acts as a reverse proxy for gunicorn to handle client requests as well serve static files
   nginx:
+    image: djangoproject/mynginxserver:latest
+    container_name: djangoproject_nginx
     build: ./nginx
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -28,6 +31,7 @@ services:
       - web
   db:
     image: postgres:13.4-alpine
+    container_name: djangoproject_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       #- ./init.sql:/docker-entrypoint-initdb.d/init.sql

@@ -208,88 +208,26 @@ The default display of any object is the value returned by __str__
 - database - should contain the list of available connection strings
 
 
-#### Deploying to HEROKU
-In order to execute the application Heroku needs to set up the appropriate environment and dependencies - which is provided by a number of files
-- runtime.txt - the programming language and version to use
-- requirements.txt - the python component dependencies
-- Procfile - a list of processes to be executed to start the application (for Django this will be the Gunicorn web app server  with a `.wsgi` script)
-- wsgi.py - WSGI configuration file to call Django application in the Heroku environment
+#### Dockerizing Django with Postgres, gunicorn, Nginx
 
-Heroku is closely integrated with the git source code version control system, using it to upload/synchronise any changes you make to the live system. It does this by adding a new heroku "remote" repository named heroku pointing to a repository for your source on the Heroku cloud.
+Install Docker and add a Dockerfile to the project root directory.
 
-We can't use the default `SQLite` database on Heroku because it is file-based, and it would be deleted from the ephemeral file system every time the application restarts. The Heroku mechanism for handling this situation is to use a database add-on and configure the web application using information from an environment configuration variable, set by the add-on.
+Then add a docker-compose.yml file to the project root. Update the SECRET_KEY, DEBUG, and ALLOWED_HOSTS variables in `settings.py` such that they are read from environment files.
+To configure `Postgres` add a new service to docker-compose.yml and update the environment file and `settings.py` accordingly with the database details and credentials. Update the Dockerfile to install the appropriate packages required for `Psycopg2`.
 
-During development, we used Django and the Django development web server to serve our static files (CSS, JavaScript, etc.). In a production environment we instead typically serve static files from a content delivery network (CDN) or the web server. To make it easy to host static files separately from the Django web application, Django provides the `collectstatic` tool to collect these files for deployment
-Heroku automatically calls collectstatic and prepares your static files for use by `WhiteNoise` after it uploads your application.
+Build the new image and spin up the two containers:
+`docker-compose up -d --build`
 
-#### Create the heroku app and upload the django project
-- `heroku create <appname>` if no appname is specified heroku will  assign a random name
-  - for an already existing heroku app to set the remote to the local repository use `heroku git:remote -a <appname>`
-- (additional step - if there is need/feel to change the appname need to repoint the heroku git remote to a different one) 
-  - `heroku apps:rename <newappname>`
-  - if appname already changed via web-ui then need to update the heroku remote URL `git remote set-url heroku <newurl>`
-  - `heroku git:remote -a <appname> -r <remote>` 
-- `git push heroku main` (push the app to heroku repository - this will upload the app, package it in dyno, run `collectstatic` and start the site) - point to note heroku will only deploy/consider code pushed to main branch, pushing code to another branch of `heroku remote` has no effect 
-  - the above will push the command from your local repository main branch to your heroku remote 
-  - if you want to deploy code to heroku from non-main branch of local repository use `git push heroku non-mainbranchname:main` to ensure it's pushed to remote main branch 
-- for the first time to setup the database tables to be used by the applications need to perform the migrate operation `heroku run python manage.py migrate`
-- create the administration superuser `heroku run python manage.py createsuperuser`
-- to open the site/app `heroku open`
+Run the migrations:
+`docker-compose exec web python manage.py migrate --noinput`
 
-To reset/purge an apps Heroku git repository use `heroku-repo` plugin
-`heroku plugins:install heroku repo`
-`heroku repo:reset --app <appname>`
+Check that the volume was created as well
+`docker volume inspect djangoproject_postgres_data`
 
-To get the list of addons and their price-tier and state(in our case heroku-postgresql database add-on) `heroku addons`
+We will also add a `entrypoint.sh` to check the Postgres health before applying the migrations and running the Django server - add the permissions of the file to be executable and update the Dockerfile accordingly such that the `entrypoint` command triggers the script.
 
-To check the configuration variables for the site `heroku config`
+For a production grade system use `gunicorn` - a WSGI server
+Also use Nginx into the mix to act as a reverse proxy for Gunicorn to handle client requests as well as serve up static files.
+To use `nginx` need to add the service in `docker-compose` file
 
-To set the configuration/environment variables to be used by the site `heroku config:set DJANGO_DEBUG=False`
-
-To set the list of allowed hosts to determine where the application can run from update `settings.py` like - 
-ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127.0.0.1']
-```
-# For example
-# ALLOWED_HOSTS = ['app--djangoproject.herokuapp.com', '127.0.0.1']
-```
-
-#### Heroku container runtime
-Along with the traditional Git plus slug compiler deployments (`git push heroku master`), Heroku also supports Docker-based deployments, with the Heroku Container Runtime.
-Docker based deployments have many benefits
-- no slug limits of 500mb
-- full control over the OS
-- easily switch to different vendor (AWS, GCP)
-
-There are currently two ways to deploy apps with Docker to Heroku:
-- *Container Registry*: deploy pre-built Docker images to Heroku
-- *Build Manifest*: given a Dockerfile, Heroku builds and deploys the Docker image
-
-Add a `Dockerfile` to the project root directory
-Add a `.dockerignore` file
-
-Test locally (build the image and run the container) 
-```
-docker build -t web:latest .
-docker run -d --name <containername> -e "PORT=8765" -e "DEBUG=True" -p 8007:8765 web:latest
-```
-Stop then remove the running container once done
-```
-docker stop <containername>
-docker rm <containername>
-```
-
-To deploy to Heroku using *Build Manifest* approach -
-Prepare a `heroku.yml` file at the project root directory
-
-Set the stack of your Heroku app to container `heroku stack:set container -a <appname>`
-
-Install the `heroku-manifest` plugin 
-```
-heroku update beta
-heroku plugins:install @heroku-cli/plugin-manifest
-```
-Add the Heroku remote and push the code up to Heroku to build the image and run the container
-```
-heroku git:remote -a <appname>
-git push heroku <branchname>:master
-```
+The changes are to be found in files with `.prod` 

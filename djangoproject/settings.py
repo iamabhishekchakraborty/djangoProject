@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
-import psycopg2.extensions
-import dj_database_url
+# import psycopg2.extensions
+# import dj_database_url
 # import whitenoise
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,14 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-p@ya!mmf4v53rzmh(to##5)^pgctms0mi#s(hpref52smo184o'
+# SECRET_KEY = '9&f#^8o4n(yxow@7=y$5lk1%buohcl#cfy)(7rhy_n6yi$y0s3'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-# ALLOWED_HOSTS = ['app--djangoproject.herokuapp.com','127.0.0.1', 'localhost']
+# ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
@@ -101,10 +101,6 @@ DATABASES = {
     }
 }
 
-# Heroku: Update database configuration from $DATABASE_URL.
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -143,6 +139,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_UTL = 'http://storage.googleapis.com/pyapp-django-project_djangomedia_bucket/static/'
+# STATIC_ROOT = 'static/'
 
 # Simplified static file serving. (to reduce the size of the static files when they are served)
 # https://warehouse.python.org/project/whitenoise/
